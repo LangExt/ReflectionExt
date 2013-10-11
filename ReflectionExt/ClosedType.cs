@@ -15,20 +15,8 @@ namespace ReflectionExt
     /// ClosedType型のオブジェクトは、TypeSketch型のオブジェクトに対してApplyTypesを呼ぶことでしか生成できないようにすることで、
     /// 「確実に閉じた型であること」を保証しています。
     /// </remarks>
-    public class ClosedType
+    public class ClosedType : TypeLike
     {
-        readonly Type value;
-        internal ClosedType(Type type)
-        {
-            this.value = type;
-        }
-
-        /// <summary>
-        /// オブジェクトをSystem.Typeに変換します。
-        /// </summary>
-        public Type ToType()
-        {
-            return this.value;
-        }
+        internal ClosedType(Type type) : base(type) { }
     }
 }

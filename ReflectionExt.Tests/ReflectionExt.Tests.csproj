@@ -51,6 +51,7 @@
     <Compile Include="NameTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectTest.cs" />
+    <Compile Include="TypeLikeTest.cs" />
     <Compile Include="TypeSketchTest.cs" />
   </ItemGroup>
   <ItemGroup>

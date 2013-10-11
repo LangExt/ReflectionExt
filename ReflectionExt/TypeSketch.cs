@@ -17,22 +17,9 @@ namespace ReflectionExt
     /// ClosedType型のオブジェクトは、TypeSketch型のオブジェクトに対してApplyTypesを呼ぶことでしか生成できないようにすることで、
     /// 「確実に閉じた型であること」を保証しています。
     /// </remarks>
-    public class TypeSketch : IEquatable<TypeSketch>
+    public class TypeSketch : TypeLike, IEquatable<TypeSketch>
     {
-        readonly Type value;
-
-        internal TypeSketch(Type type)
-        {
-            this.value = type;
-        }
-
-        /// <summary>
-        /// オブジェクトをSystem.Typeに変換します。
-        /// </summary>
-        public Type ToType()
-        {
-            return this.value;
-        }
+        internal TypeSketch(Type type) : base(type) { }
 
         /// <summary>
         /// 現在のオブジェクトが、同じ型の別のオブジェクトと等しいかどうかを判定します。 
@@ -41,7 +28,7 @@ namespace ReflectionExt
         /// <returns>現在のオブジェクトがotherで指定されたオブジェクトと等しい場合はtrue、それ以外の場合はfalse</returns>
         public bool Equals(TypeSketch other)
         {
-            return this.value.FullName == other.value.FullName;
+            return this.Name.CSharpFullName == other.Name.CSharpFullName;
         }
 
         /// <summary>使用しません。</summary>
@@ -58,7 +45,7 @@ namespace ReflectionExt
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode()
         {
-            return this.value.FullName.GetHashCode();
+            return this.Name.GetHashCode();
         }
 
         /// <summary>
@@ -67,7 +54,7 @@ namespace ReflectionExt
         /// <returns>このオブジェクトの文字列表現</returns>
         public override string ToString()
         {
-            return string.Format("TypeSketch(value={0})", this.value.FullName);
+            return string.Format("TypeSketch(value={0})", this.Name.CSharpFullName);
         }
 
         /// <summary>
@@ -77,14 +64,14 @@ namespace ReflectionExt
         /// </summary>
         public ClosedType ApplyTypes(params ClosedType[] typeParameterTypes)
         {
-            return this.value.GetGenericArguments().ToSeq().Partition(t => t.IsGenericParameter).Match(
+            return this.Type.GetGenericArguments().ToSeq().Partition(t => t.IsGenericParameter).Match(
                 (genParams, appliedParams) =>
                 {
                     if (genParams.IsEmpty() && typeParameterTypes.Length == 0)
-                        return new ClosedType(this.value);
+                        return new ClosedType(this.Type);
                     if (genParams.Size() != typeParameterTypes.Length)
                         throw new ArgumentException();
-                    var res = this.value.MakeGenericType(typeParameterTypes.Map(t => t.ToType()).ToSeq().ToArray());
+                    var res = this.Type.MakeGenericType(typeParameterTypes.Map(t => t.ToType()).ToSeq().ToArray());
                     return new ClosedType(res);
                 }
             );
