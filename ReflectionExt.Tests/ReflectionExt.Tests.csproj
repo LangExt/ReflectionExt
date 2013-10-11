@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectTest.cs" />
+    <Compile Include="TypeSketchTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReflectionExt\ReflectionExt.csproj">

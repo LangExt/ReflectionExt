@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using LangExt;
 
 namespace ReflectionExt
 {
@@ -67,6 +68,26 @@ namespace ReflectionExt
         public override string ToString()
         {
             return string.Format("TypeSketch(value={0})", this.value.FullName);
+        }
+
+        /// <summary>
+        /// 型パラメータを適用し、ClosedTypeに変換します。
+        /// 型パラメータは、全て適用する必要があります。
+        /// 型パラメータが多すぎる場合や、足りない場合、例外が発生します。
+        /// </summary>
+        public ClosedType ApplyTypes(params ClosedType[] typeParameterTypes)
+        {
+            return this.value.GetGenericArguments().ToSeq().Partition(t => t.IsGenericParameter).Match(
+                (genParams, appliedParams) =>
+                {
+                    if (genParams.IsEmpty() && typeParameterTypes.Length == 0)
+                        return new ClosedType(this.value);
+                    if (genParams.Size() != typeParameterTypes.Length)
+                        throw new ArgumentException();
+                    var res = this.value.MakeGenericType(typeParameterTypes.Map(t => t.ToType()).ToSeq().ToArray());
+                    return new ClosedType(res);
+                }
+            );
         }
     }
 }
