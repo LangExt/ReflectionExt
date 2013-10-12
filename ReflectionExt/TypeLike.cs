@@ -32,4 +32,21 @@ namespace ReflectionExt
         /// </summary>
         public Name Name { get { return Name.Of(this.Type); } }
     }
+
+    /// <summary>
+    /// 型を表す実装を共有するためのクラスです。
+    /// </summary>
+    /// <typeparam name="TSelf">派生クラス自身を指定してください。</typeparam>
+    public abstract class TypeLike<TSelf> : TypeLike where TSelf : TypeLike<TSelf>
+    {
+        /// <summary>
+        /// 保持する型を指定してオブジェクトを構築します。
+        /// </summary>
+        protected TypeLike(Type type) : base(type) { }
+
+        /// <summary>
+        /// 基底クラスを取得します。
+        /// </summary>
+        public abstract TSelf BaseType { get; }
+    }
 }

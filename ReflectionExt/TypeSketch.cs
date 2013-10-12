@@ -17,9 +17,17 @@ namespace ReflectionExt
     /// ClosedType型のオブジェクトは、TypeSketch型のオブジェクトに対してApplyTypesを呼ぶことでしか生成できないようにすることで、
     /// 「確実に閉じた型であること」を保証しています。
     /// </remarks>
-    public class TypeSketch : TypeLike, IEquatable<TypeSketch>
+    public class TypeSketch : TypeLike<TypeSketch>, IEquatable<TypeSketch>
     {
         internal TypeSketch(Type type) : base(type) { }
+
+        /// <summary>
+        /// 基底クラスを取得します。
+        /// </summary>
+        public override TypeSketch BaseType
+        {
+            get { return new TypeSketch(this.Type.BaseType); }
+        }
 
         /// <summary>
         /// 現在のオブジェクトが、同じ型の別のオブジェクトと等しいかどうかを判定します。 
