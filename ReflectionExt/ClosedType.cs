@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using LangExt;
 
 namespace ReflectionExt
@@ -18,7 +19,11 @@ namespace ReflectionExt
     /// </remarks>
     public class ClosedType : TypeLike<ClosedType>
     {
-        internal ClosedType(Type type) : base(type) { }
+        internal ClosedType(Type type)
+            : base(type)
+        {
+            Debug.Assert(type.IsGenericType == false);
+        }
 
         protected override ClosedType ToSelf(Type rawType)
         {
