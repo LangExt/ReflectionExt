@@ -94,5 +94,57 @@ namespace ReflectionExt.Tests
             [Test] public void CSharpライクな名前が取得できる() { Assert.That(sut.CSharpName, Is.EqualTo("Seq<int>")); }
             [Test] public void CSharpライクな完全名が取得できる() { Assert.That(sut.CSharpFullName, Is.EqualTo("global::LangExt.Seq<int>")); }
         }
+
+        public class ジェネリック型にネストした非ジェネリック型
+        {
+            Name sut = Name.Of(typeof(Parent<int>.Nested));
+
+            [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Nested")); }
+            [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo(typeof(Parent<int>.Nested).FullName)); }
+            [Test] public void 名前空間が取得できる() { Assert.That(sut.Namespace, Is.EqualTo("ReflectionExt.Tests")); }
+            [Test] public void CSharpライクな名前が取得できる() { Assert.That(sut.CSharpName, Is.EqualTo("Nested")); }
+            [Test] public void CSharpライクな完全名が取得できる() { Assert.That(sut.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.Parent<int>.Nested")); }
+        }
+
+        public class ジェネリック型にネストしたジェネリック型
+        {
+            Name sut = Name.Of(typeof(Parent<int>.Nested<string>));
+
+            [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Nested`1")); }
+            [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo(typeof(Parent<int>.Nested<string>).FullName)); }
+            [Test] public void 名前空間が取得できる() { Assert.That(sut.Namespace, Is.EqualTo("ReflectionExt.Tests")); }
+            [Test] public void CSharpライクな名前が取得できる() { Assert.That(sut.CSharpName, Is.EqualTo("Nested<string>")); }
+            [Test] public void CSharpライクな完全名が取得できる() { Assert.That(sut.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.Parent<int>.Nested<string>")); }
+        }
+
+        public class 複雑なネスト型
+        {
+            Name sut = Name.Of(typeof(Parent<int>.Nested<string, int>.Nested2.Nested3.Nested4<bool>.Nested5));
+
+            [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Nested5")); }
+            [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo(typeof(Parent<int>.Nested<string, int>.Nested2.Nested3.Nested4<bool>.Nested5).FullName)); }
+            [Test] public void 名前空間が取得できる() { Assert.That(sut.Namespace, Is.EqualTo("ReflectionExt.Tests")); }
+            [Test] public void CSharpライクな名前が取得できる() { Assert.That(sut.CSharpName, Is.EqualTo("Nested5")); }
+            [Test] public void CSharpライクな完全名が取得できる() { Assert.That(sut.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.Parent<int>.Nested<string, int>.Nested2.Nested3.Nested4<bool>.Nested5")); }
+        }
+    }
+
+    public class Parent<T>
+    {
+        public class Nested { }
+        public class Nested<U> { }
+        public class Nested<T1, T2>
+        {
+            public class Nested2
+            {
+                public class Nested3
+                {
+                    public class Nested4<T3>
+                    {
+                        public class Nested5 { }
+                    }
+                }
+            }
+        }
     }
 }
