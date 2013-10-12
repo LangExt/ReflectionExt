@@ -48,5 +48,25 @@ namespace ReflectionExt
         {
             return ClosedType.FromType(this.Type, Seq.Singleton(firstTypeParameter).Append(restTypeParameters.ToSeq()));
         }
+
+        /// <summary>
+        /// このオブジェクトをTypeSketchに変換します。
+        /// この変換は失敗しません。
+        /// </summary>
+        public TypeSketch ToSketch()
+        {
+            return new TypeSketch(this.Type);
+        }
+
+        /// <summary>
+        /// このオブジェクトをTypeSketchに暗黙変換します。
+        /// 対象がnullの場合はnullが返されますが、この挙動は将来にわたって保証されるものではありません。
+        /// </summary>
+        public static implicit operator TypeSketch(OpenType openType)
+        {
+            if (openType == null)
+                return null;
+            return new TypeSketch(openType.Type);
+        }
     }
 }
