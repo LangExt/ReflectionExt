@@ -14,8 +14,10 @@ namespace ReflectionExt
     /// 閉じていない型経由で取得したMethodInfoを呼び出そうとすると実行時エラーが発生します。
     /// この意図しない実行時エラーを減らすために、ReflectionExtでは「確実に閉じた型であることが保証されている」ClosedTypeと、
     /// 「閉じているかどうかが分からない」TypeSketchの2つの型を用意しています。
-    /// ClosedType型のオブジェクトは、TypeSketch型のオブジェクトに対してApplyTypesを呼ぶことでしか生成できないようにすることで、
+    /// ClosedType型のオブジェクトは、TypeSketch型のオブジェクトやOpenType型のオブジェクトに対してApplyTypesを呼ぶことでしか生成できないようにすることで、
     /// 「確実に閉じた型であること」を保証しています。
+    /// また、OpenType型のオブジェクトは、TypeSketch型のオブジェクトやCloedType型のオブジェクトに対してUnapplyTypesを呼ぶことでしか生成できないようにすることで、
+    /// 「確実に開いた型であること」を保証しています。
     /// </remarks>
     public class TypeSketch : TypeLike<TypeSketch>, IEquatable<TypeSketch>
     {

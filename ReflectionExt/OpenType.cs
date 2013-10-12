@@ -10,7 +10,7 @@ namespace ReflectionExt
     /// <remarks>
     /// 「開いた」とは、指定されていない型パラメータを持つ型のことです。
     /// 例えば、List[T]は開いていますが、List[int]は開いていません。
-    /// OpenType型のオブジェクトは、TypeSketch型のオブジェクトに対してUnapplyTypesを呼ぶことでしか生成できないようにすることで、
+    /// OpenType型のオブジェクトは、TypeSketch型のオブジェクトやClosedType型のオブジェクトに対してUnapplyTypesを呼ぶことでしか生成できないようにすることで、
     /// 「確実に開いた型であること」を保証しています。
     /// </remarks>
     public class OpenType : TypeLike<OpenType>
