@@ -30,6 +30,21 @@ namespace ReflectionExt
             return new ClosedType(rawType);
         }
 
+        internal static ClosedType FromType(Type type, Seq<ClosedType> typeParameterTypes)
+        {
+            return type.GetGenericArguments().ToSeq().Partition(t => t.IsGenericParameter).Match(
+                (genParams, appliedParams) =>
+                {
+                    if (genParams.IsEmpty() && typeParameterTypes.IsEmpty())
+                        return new ClosedType(type);
+                    if (genParams.Size() != typeParameterTypes.Size())
+                        throw new ArgumentException();
+                    var res = type.MakeGenericType(typeParameterTypes.Map(t => t.ToType()).ToArray());
+                    return new ClosedType(res);
+                }
+            );
+        }
+
         /// <summary>
         /// 型パラメータの適用を解除し、OpenTypeへの変換を試みます。
         /// </summary>

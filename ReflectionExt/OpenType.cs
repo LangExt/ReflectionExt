@@ -33,5 +33,20 @@ namespace ReflectionExt
             var res = type.GetGenericTypeDefinition();
             return Option.Some(new OpenType(res));
         }
+
+        /// <summary>
+        /// 型パラメータを適用し、ClosedTypeに変換します。
+        /// 型パラメータは、全て適用する必要があります。
+        /// 型パラメータが多すぎる場合や、足りない場合、例外が発生します。
+        /// </summary>
+        /// <remarks>
+        /// OpenTypeは、型パラメータを最低1つは持っていることが確実なため、このメソッドは引数を全く与えないということは出来ません。
+        /// これは、ClosedTypeの配列を持っており、それをそのまま適用する場合にはこのメソッドを直接使うことができないということを意味します。
+        /// ClosedTypeの配列を持っている場合は、この型をTypeSketchに変換してからTypeSketchのAppyTypesを呼び出すといいでしょう。
+        /// </remarks>
+        public ClosedType ApplyTypes(ClosedType firstTypeParameter, params ClosedType[] restTypeParameters)
+        {
+            return ClosedType.FromType(this.Type, Seq.Singleton(firstTypeParameter).Append(restTypeParameters.ToSeq()));
+        }
     }
 }

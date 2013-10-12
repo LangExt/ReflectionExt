@@ -69,17 +69,7 @@ namespace ReflectionExt
         /// </summary>
         public ClosedType ApplyTypes(params ClosedType[] typeParameterTypes)
         {
-            return this.Type.GetGenericArguments().ToSeq().Partition(t => t.IsGenericParameter).Match(
-                (genParams, appliedParams) =>
-                {
-                    if (genParams.IsEmpty() && typeParameterTypes.Length == 0)
-                        return new ClosedType(this.Type);
-                    if (genParams.Size() != typeParameterTypes.Length)
-                        throw new ArgumentException();
-                    var res = this.Type.MakeGenericType(typeParameterTypes.Map(t => t.ToType()).ToSeq().ToArray());
-                    return new ClosedType(res);
-                }
-            );
+            return ClosedType.FromType(this.Type, typeParameterTypes.ToSeq());
         }
 
         /// <summary>

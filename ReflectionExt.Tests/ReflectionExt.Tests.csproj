@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="ClosedTypeTest.cs" />
     <Compile Include="NameTest.cs" />
+    <Compile Include="OpenTypeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectTest.cs" />
     <Compile Include="TypeLikeTest.cs" />
