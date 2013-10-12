@@ -4,6 +4,9 @@ using LangExt;
 
 namespace ReflectionExt
 {
+    /// <summary>
+    /// System.Typeに関する操作を提供します。
+    /// </summary>
     public static class TypeModule
     {
         static string ToCSharpNameImpl(Type type, string defaultName, Func<Type, string> recFun, string prefix)
@@ -85,11 +88,19 @@ namespace ReflectionExt
             return defaultName.Substring(0, pos) + "<" + string.Join(", ", args.Map(recFun)) + ">";
         }
 
+        /// <summary>
+        /// C#風の名前を表す文字列に変換します。
+        /// ToCSharpFullnameと違い、どの場所でも有効な名前にはなりません。
+        /// </summary>
         public static string ToCSharpName(this Type self)
         {
             return ToCSharpNameImpl(self, self.Name, ToCSharpName, "");
         }
 
+        /// <summary>
+        /// C#風の名前を表す文字列に変換します。
+        /// この拡張メソッドが返す名前は、コード中のどの場所でも有効な名前になります。
+        /// </summary>
         public static string ToCSharpFullName(this Type self)
         {
             return ToCSharpNameImpl(self, DefaultFullName(self), ToCSharpFullName, "global::");

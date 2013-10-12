@@ -30,6 +30,7 @@ namespace ReflectionExt
 
         /// <summary>
         /// 型の完全名を取得します。
+        /// 型パラメータや部分的に型パラメータが指定された型などでは、このプロパティがnullを返す可能性があります。
         /// </summary>
         public string FullName { get { return this.type.FullName; } }
 
