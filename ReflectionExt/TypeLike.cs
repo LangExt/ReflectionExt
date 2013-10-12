@@ -1,4 +1,5 @@
 ﻿using System;
+using LangExt;
 
 namespace ReflectionExt
 {
@@ -48,5 +49,23 @@ namespace ReflectionExt
         /// 基底クラスを取得します。
         /// </summary>
         public abstract TSelf BaseType { get; }
+
+        /// <summary>
+        /// ネストした型を取得します。
+        /// </summary>
+        /// <param name="nonPublic">publicではないネストした型も取得するかどうか</param>
+        /// <returns>ネストした型のシーケンス</returns>
+        protected abstract Seq<TSelf> GetNestedTypes(bool nonPublic);
+
+        /// <summary>
+        /// このオブジェクトの表す型に直接含まれるネストした型をすべて取得します。
+        /// </summary>
+        public Seq<TSelf> AllNestedTypes { get { return this.GetNestedTypes(true); } }
+
+        /// <summary>
+        /// このオブジェクトの表す型に直接含まれるネストしたpublicな型を取得します。
+        /// 非publicな型も含めて取得したい場合、AllNestedTypesを使用してください。
+        /// </summary>
+        public Seq<TSelf> PublicNestedTypes { get { return this.GetNestedTypes(false); } }
     }
 }

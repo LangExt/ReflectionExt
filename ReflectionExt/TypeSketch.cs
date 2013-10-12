@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Reflection;
 using LangExt;
 
 namespace ReflectionExt
@@ -27,6 +28,11 @@ namespace ReflectionExt
         public override TypeSketch BaseType
         {
             get { return new TypeSketch(this.Type.BaseType); }
+        }
+
+        protected override Seq<TypeSketch> GetNestedTypes(bool nonPublic)
+        {
+            return this.Type.GetNestedTypes(nonPublic ? BindingFlags.Public | BindingFlags.NonPublic : BindingFlags.Public).Map(_ => new TypeSketch(_)).ToSeq();
         }
 
         /// <summary>

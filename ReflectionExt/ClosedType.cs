@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using LangExt;
 
 namespace ReflectionExt
 {
@@ -25,6 +27,11 @@ namespace ReflectionExt
         public override ClosedType BaseType
         {
             get { return new ClosedType(this.Type.BaseType); }
+        }
+
+        protected override Seq<ClosedType> GetNestedTypes(bool nonPublic)
+        {
+            return this.Type.GetNestedTypes(nonPublic ? BindingFlags.Public | BindingFlags.NonPublic : BindingFlags.Public).Map(_ => new ClosedType(_)).ToSeq();
         }
     }
 }
