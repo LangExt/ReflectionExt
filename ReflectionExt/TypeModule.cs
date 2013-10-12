@@ -55,7 +55,8 @@ namespace ReflectionExt
 
         private static string ToCSharpNestedFullName(Type type, string defaultName, Func<Type, string> recFun, string prefix)
         {
-            var types = defaultName.Substring(0, defaultName.IndexOf('[')).Split('+');
+            var appliedParamPos = defaultName.IndexOf('[');
+            var types = (appliedParamPos == -1 ? defaultName : defaultName.Substring(0, defaultName.IndexOf('['))).Split('+');
             var genArgs = type.GetGenericArguments();
             var i = 0;
             var buf = new StringBuilder(prefix);

@@ -81,5 +81,16 @@ namespace ReflectionExt
                 }
             );
         }
+
+        /// <summary>
+        /// 型パラメータの適用を解除し、OpenTypeへの変換を試みます。
+        /// </summary>
+        public Option<OpenType> UnapplyTypes()
+        {
+            if (this.Type.IsGenericType == false)
+                return Option.None;
+            var res = this.Type.GetGenericTypeDefinition();
+            return Option.Some(new OpenType(res));
+        }
     }
 }

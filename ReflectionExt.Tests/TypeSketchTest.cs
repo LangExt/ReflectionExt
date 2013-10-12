@@ -42,6 +42,25 @@ namespace ReflectionExt.Tests
             var sut = Reflect.Type(typeof(Seq<>));
             Assert.That(() => sut.ApplyTypes(), Throws.Exception.TypeOf<ArgumentException>());
         }
+
+        [TestCase(typeof(Seq<int>), typeof(Seq<>))]
+        [TestCase(typeof(Seq<>), typeof(Seq<>))]
+        [TestCase(typeof(int), null)]
+        public void 型パラメータを持つ型の場合UnapplyTypesでOpenTypesが取得できる(Type type, Type expected)
+        {
+            var sut = Reflect.Type(type);
+            Assert.That(sut.UnapplyTypes().Map(t => t.ToType()), Is.EqualTo(expected == null ? Option.None : Option.Some(expected)));
+        }
+
+        [Test]
+        public void BaseTypeで取得した中途半端に型指定された型でもUnapplyTypesできる()
+        {
+            var sut = Reflect.Type(typeof(Sub5<>)).BaseType;
+            Assert.That(sut.UnapplyTypes().GetOr(null).Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest.Base3<T, U>"));
+
+            sut = Reflect.Type(typeof(Sub5<int>)).BaseType;
+            Assert.That(sut.UnapplyTypes().GetOr(null).Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest.Base3<T, U>"));
+        }
         
         class Base1 {}
         class Base2<T> { }
