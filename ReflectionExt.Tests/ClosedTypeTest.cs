@@ -27,5 +27,13 @@ namespace ReflectionExt.Tests
             var sut = Reflect.Type(type).ApplyTypes();
             Assert.That(sut.BaseType.Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.ClosedTypeTest." + expected));
         }
+
+        [TestCase(typeof(Seq<int>), typeof(Seq<>))]
+        [TestCase(typeof(int), null)]
+        public void 型パラメータを持つ型の場合UnapplyTypesでOpenTypesが取得できる(Type type, Type expected)
+        {
+            var sut = Reflect.Type(type).ApplyTypes();
+            Assert.That(sut.UnapplyTypes().Map(t => t.ToType()), Is.EqualTo(expected == null ? Option.None : Option.Some(expected)));
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using LangExt;
 
 namespace ReflectionExt
 {
@@ -23,6 +24,14 @@ namespace ReflectionExt
         protected override OpenType ToSelf(Type rawType)
         {
             return new OpenType(rawType);
+        }
+
+        internal static Option<OpenType> FromType(Type type)
+        {
+            if (type.IsGenericType == false)
+                return Option.None;
+            var res = type.GetGenericTypeDefinition();
+            return Option.Some(new OpenType(res));
         }
     }
 }

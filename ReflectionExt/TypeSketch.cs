@@ -87,10 +87,7 @@ namespace ReflectionExt
         /// </summary>
         public Option<OpenType> UnapplyTypes()
         {
-            if (this.Type.IsGenericType == false)
-                return Option.None;
-            var res = this.Type.GetGenericTypeDefinition();
-            return Option.Some(new OpenType(res));
+            return OpenType.FromType(this.Type);
         }
     }
 }

@@ -29,5 +29,13 @@ namespace ReflectionExt
         {
             return new ClosedType(rawType);
         }
+
+        /// <summary>
+        /// 型パラメータの適用を解除し、OpenTypeへの変換を試みます。
+        /// </summary>
+        public Option<OpenType> UnapplyTypes()
+        {
+            return OpenType.FromType(this.Type);
+        }
     }
 }
