@@ -127,6 +127,17 @@ namespace ReflectionExt.Tests
             [Test] public void CSharpライクな名前が取得できる() { Assert.That(sut.CSharpName, Is.EqualTo("Nested5")); }
             [Test] public void CSharpライクな完全名が取得できる() { Assert.That(sut.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.Parent<int>.Nested<string, int>.Nested2.Nested3.Nested4<bool>.Nested5")); }
         }
+
+        public class 中途半端に型指定された型
+        {
+            Name sut = Name.Of(typeof(Sub<>).BaseType);
+
+            [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Nested`2")); }
+            [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.Null); }
+            [Test] public void 名前空間が取得できる() { Assert.That(sut.Namespace, Is.EqualTo("ReflectionExt.Tests")); }
+            [Test] public void CSharpライクな名前が取得できる() { Assert.That(sut.CSharpName, Is.EqualTo("Nested<T, bool>")); }
+            [Test] public void CSharpライクな完全名が取得できる() { Assert.That(sut.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.Parent<T>.Nested<T, bool>")); }
+        }
     }
 
     public class Parent<T>
@@ -147,4 +158,5 @@ namespace ReflectionExt.Tests
             }
         }
     }
+    public class Sub<T> : Parent<T>.Nested<T, bool> { }
 }

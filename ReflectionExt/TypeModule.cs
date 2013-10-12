@@ -92,7 +92,16 @@ namespace ReflectionExt
 
         public static string ToCSharpFullName(this Type self)
         {
-            return ToCSharpNameImpl(self, self.FullName, ToCSharpFullName, "global::");
+            return ToCSharpNameImpl(self, DefaultFullName(self), ToCSharpFullName, "global::");
+        }
+
+        private static string DefaultFullName(Type type)
+        {
+            if (type.FullName != null || type.IsGenericParameter)
+                return type.FullName;
+            if (type.IsNested == false)
+                return type.Namespace + "." + type.Name;
+            return type.DeclaringType.ToCSharpFullName() + "." + type.Name;
         }
     }
 }
