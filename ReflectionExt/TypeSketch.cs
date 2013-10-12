@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Reflection;
 using LangExt;
 
 namespace ReflectionExt
@@ -22,17 +21,9 @@ namespace ReflectionExt
     {
         internal TypeSketch(Type type) : base(type) { }
 
-        /// <summary>
-        /// 基底クラスを取得します。
-        /// </summary>
-        public override TypeSketch BaseType
+        protected override TypeSketch ToSelf(Type rawType)
         {
-            get { return new TypeSketch(this.Type.BaseType); }
-        }
-
-        protected override Seq<TypeSketch> GetNestedTypes(bool nonPublic)
-        {
-            return this.Type.GetNestedTypes(nonPublic ? BindingFlags.Public | BindingFlags.NonPublic : BindingFlags.Public).Map(_ => new TypeSketch(_)).ToSeq();
+            return new TypeSketch(rawType);
         }
 
         /// <summary>

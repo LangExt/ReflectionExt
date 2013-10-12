@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using LangExt;
 
 namespace ReflectionExt
@@ -45,27 +46,28 @@ namespace ReflectionExt
         /// </summary>
         protected TypeLike(Type type) : base(type) { }
 
+        protected abstract TSelf ToSelf(Type rawType);
+
         /// <summary>
         /// 基底クラスを取得します。
         /// </summary>
-        public abstract TSelf BaseType { get; }
-
-        /// <summary>
-        /// ネストした型を取得します。
-        /// </summary>
-        /// <param name="nonPublic">publicではないネストした型も取得するかどうか</param>
-        /// <returns>ネストした型のシーケンス</returns>
-        protected abstract Seq<TSelf> GetNestedTypes(bool nonPublic);
+        public TSelf BaseType { get { return ToSelf(this.Type.BaseType); } }
 
         /// <summary>
         /// このオブジェクトの表す型に直接含まれるネストした型をすべて取得します。
         /// </summary>
-        public Seq<TSelf> AllNestedTypes { get { return this.GetNestedTypes(true); } }
+        public Seq<TSelf> AllNestedTypes
+        {
+            get { return this.Type.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic).Map(this.ToSelf).ToSeq(); }
+        }
 
         /// <summary>
         /// このオブジェクトの表す型に直接含まれるネストしたpublicな型を取得します。
         /// 非publicな型も含めて取得したい場合、AllNestedTypesを使用してください。
         /// </summary>
-        public Seq<TSelf> PublicNestedTypes { get { return this.GetNestedTypes(false); } }
+        public Seq<TSelf> PublicNestedTypes
+        {
+            get { return this.Type.GetNestedTypes(BindingFlags.Public).Map(this.ToSelf).ToSeq(); }
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using LangExt;
 
 namespace ReflectionExt
@@ -21,17 +20,9 @@ namespace ReflectionExt
     {
         internal ClosedType(Type type) : base(type) { }
 
-        /// <summary>
-        /// 基底クラスを取得します。
-        /// </summary>
-        public override ClosedType BaseType
+        protected override ClosedType ToSelf(Type rawType)
         {
-            get { return new ClosedType(this.Type.BaseType); }
-        }
-
-        protected override Seq<ClosedType> GetNestedTypes(bool nonPublic)
-        {
-            return this.Type.GetNestedTypes(nonPublic ? BindingFlags.Public | BindingFlags.NonPublic : BindingFlags.Public).Map(_ => new ClosedType(_)).ToSeq();
+            return new ClosedType(rawType);
         }
     }
 }
