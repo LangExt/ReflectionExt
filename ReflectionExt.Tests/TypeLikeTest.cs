@@ -12,8 +12,8 @@ namespace ReflectionExt.Tests
         public void 名前を表すオブジェクトが取得できる()
         {
             var sut = Reflect.Type<int>();
-            Assert.That(sut.Name, Is.EqualTo(Name.Of(typeof(int))));
-            Assert.That(sut.ApplyTypes().Name, Is.EqualTo(Name.Of(typeof(int))));
+            Assert.That(sut.Name, Is.EqualTo(Name.FromType(typeof(int))));
+            Assert.That(sut.ApplyTypes().Name, Is.EqualTo(Name.FromType(typeof(int))));
         }
 
         [Test]

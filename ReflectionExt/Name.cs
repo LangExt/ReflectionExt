@@ -18,7 +18,7 @@ namespace ReflectionExt
         /// <summary>
         /// System.TypeオブジェクトからNameオブジェクトを構築します。
         /// </summary>
-        public static Name Of(Type type)
+        public static Name FromType(Type type)
         {
             return new Name(type);
         }

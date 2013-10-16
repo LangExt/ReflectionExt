@@ -32,7 +32,7 @@ namespace ReflectionExt
         /// <summary>
         /// このオブジェクトの表す型の名前を取得します。
         /// </summary>
-        public Name Name { get { return Name.Of(this.Type); } }
+        public Name Name { get { return Name.FromType(this.Type); } }
     }
 
     /// <summary>

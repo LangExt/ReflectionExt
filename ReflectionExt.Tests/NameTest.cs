@@ -11,7 +11,7 @@ namespace ReflectionExt.Tests
         [Test]
         public void 型からNameが構築できる()
         {
-            Name sut = Name.Of(typeof(int));
+            Name sut = Name.FromType(typeof(int));
             Assert.That(sut, Is.Not.Null);
         }
 
@@ -23,15 +23,15 @@ namespace ReflectionExt.Tests
         [TestCase(null, null, true)]
         public void Nameどうしの比較ができる(Type t1, Type t2, bool expected)
         {
-            Name name1 = t1 == null ? null : Name.Of(t1);
-            Name name2 = t2 == null ? null : Name.Of(t2);
+            Name name1 = t1 == null ? null : Name.FromType(t1);
+            Name name2 = t2 == null ? null : Name.FromType(t2);
             Assert.That(t1 == t2, Is.EqualTo(expected));
             Assert.That(t1 != t2, Is.Not.EqualTo(expected));
         }
 
         public class int型
         {
-            Name sut = Name.Of(typeof(int));
+            Name sut = Name.FromType(typeof(int));
 
             [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Int32")); }
             [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo("System.Int32")); }
@@ -42,7 +42,7 @@ namespace ReflectionExt.Tests
 
         public class DateTime型
         {
-            Name sut = Name.Of(typeof(DateTime));
+            Name sut = Name.FromType(typeof(DateTime));
 
             [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("DateTime")); }
             [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo("System.DateTime")); }
@@ -53,7 +53,7 @@ namespace ReflectionExt.Tests
 
         public class intのnull許容型
         {
-            Name sut = Name.Of(typeof(int?));
+            Name sut = Name.FromType(typeof(int?));
 
             [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Nullable`1")); }
             [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo(typeof(int?).FullName)); }
@@ -64,7 +64,7 @@ namespace ReflectionExt.Tests
 
         public class DateTimeのnull許容型
         {
-            Name sut = Name.Of(typeof(DateTime?));
+            Name sut = Name.FromType(typeof(DateTime?));
 
             [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Nullable`1")); }
             [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo(typeof(DateTime?).FullName)); }
@@ -75,7 +75,7 @@ namespace ReflectionExt.Tests
 
         public class Seq型
         {
-            Name sut = Name.Of(typeof(Seq<>));
+            Name sut = Name.FromType(typeof(Seq<>));
 
             [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Seq`1")); }
             [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo("LangExt.Seq`1")); }
@@ -86,7 +86,7 @@ namespace ReflectionExt.Tests
 
         public class intのSeq型
         {
-            Name sut = Name.Of(typeof(Seq<int>));
+            Name sut = Name.FromType(typeof(Seq<int>));
 
             [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Seq`1")); }
             [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo(typeof(Seq<int>).FullName)); }
@@ -97,7 +97,7 @@ namespace ReflectionExt.Tests
 
         public class ジェネリック型にネストした非ジェネリック型
         {
-            Name sut = Name.Of(typeof(Parent<int>.Nested));
+            Name sut = Name.FromType(typeof(Parent<int>.Nested));
 
             [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Nested")); }
             [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo(typeof(Parent<int>.Nested).FullName)); }
@@ -108,7 +108,7 @@ namespace ReflectionExt.Tests
 
         public class ジェネリック型にネストしたジェネリック型
         {
-            Name sut = Name.Of(typeof(Parent<int>.Nested<string>));
+            Name sut = Name.FromType(typeof(Parent<int>.Nested<string>));
 
             [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Nested`1")); }
             [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo(typeof(Parent<int>.Nested<string>).FullName)); }
@@ -119,7 +119,7 @@ namespace ReflectionExt.Tests
 
         public class 複雑なネスト型
         {
-            Name sut = Name.Of(typeof(Parent<int>.Nested<string, int>.Nested2.Nested3.Nested4<bool>.Nested5));
+            Name sut = Name.FromType(typeof(Parent<int>.Nested<string, int>.Nested2.Nested3.Nested4<bool>.Nested5));
 
             [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Nested5")); }
             [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.EqualTo(typeof(Parent<int>.Nested<string, int>.Nested2.Nested3.Nested4<bool>.Nested5).FullName)); }
@@ -130,7 +130,7 @@ namespace ReflectionExt.Tests
 
         public class 中途半端に型指定された型
         {
-            Name sut = Name.Of(typeof(Sub<>).BaseType);
+            Name sut = Name.FromType(typeof(Sub<>).BaseType);
 
             [Test] public void 単純名が取得できる() { Assert.That(sut.Value, Is.EqualTo("Nested`2")); }
             [Test] public void 完全名が取得できる() { Assert.That(sut.FullName, Is.Null); }
