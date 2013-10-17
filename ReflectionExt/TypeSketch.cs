@@ -19,49 +19,13 @@ namespace ReflectionExt
     /// また、OpenType型のオブジェクトは、TypeSketch型のオブジェクトやCloedType型のオブジェクトに対してUnapplyTypesを呼ぶことでしか生成できないようにすることで、
     /// 「確実に開いた型であること」を保証しています。
     /// </remarks>
-    public class TypeSketch : TypeLike<TypeSketch>, IEquatable<TypeSketch>
+    public class TypeSketch : TypeLike<TypeSketch>
     {
         internal TypeSketch(Type type) : base(type) { }
 
         protected override TypeSketch ToSelf(Type rawType)
         {
             return new TypeSketch(rawType);
-        }
-
-        /// <summary>
-        /// 現在のオブジェクトが、同じ型の別のオブジェクトと等しいかどうかを判定します。 
-        /// </summary>
-        /// <param name="other">このオブジェクトと比較するTypeSketch</param>
-        /// <returns>現在のオブジェクトがotherで指定されたオブジェクトと等しい場合はtrue、それ以外の場合はfalse</returns>
-        public bool Equals(TypeSketch other)
-        {
-            return this.Name.CSharpFullName == other.Name.CSharpFullName;
-        }
-
-        /// <summary>使用しません。</summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object obj)
-        {
-            var other = obj as TypeSketch;
-            if (other == null)
-                return false;
-            return Equals(other);
-        }
-
-        /// <summary>使用しません。</summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode()
-        {
-            return this.Name.GetHashCode();
-        }
-
-        /// <summary>
-        /// このオブジェクトを文字列表現に変換します。
-        /// </summary>
-        /// <returns>このオブジェクトの文字列表現</returns>
-        public override string ToString()
-        {
-            return string.Format("TypeSketch(value={0})", this.Name.CSharpFullName);
         }
 
         /// <summary>

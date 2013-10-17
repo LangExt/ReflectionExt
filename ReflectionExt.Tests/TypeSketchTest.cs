@@ -16,7 +16,7 @@ namespace ReflectionExt.Tests
             public void ApplyTypesでClosedTypeに変換できる()
             {
                 ClosedType res = sut.ApplyTypes();
-                Assert.That(res.ToType(), Is.EqualTo(typeof(int)));
+                Assert.That(res, Is.EqualTo(ClosedType.OfInt));
             }
 
             [Test, ExpectedException(typeof(InvalidOperationException))]
@@ -51,7 +51,7 @@ namespace ReflectionExt.Tests
             [Test]
             public void ApplyTypesでClosedTypeに変換できる()
             {
-                ClosedType res = sut.ApplyTypes(Reflect.Type<int>().ApplyTypes());
+                ClosedType res = sut.ApplyTypes(ClosedType.OfInt);
                 Assert.That(res.ToType(), Is.EqualTo(typeof(Seq<int>)));
             }
 
@@ -72,7 +72,7 @@ namespace ReflectionExt.Tests
             [Test]
             public void ApplyTypesでClosedTypeに変換できる()
             {
-                ClosedType res = sut.ApplyTypes(Reflect.Type<int>().ApplyTypes(), Reflect.Type<string>().ApplyTypes());
+                ClosedType res = sut.ApplyTypes(ClosedType.OfInt, ClosedType.OfString);
                 Assert.That(res.ToType(), Is.EqualTo(typeof(Base3<int, string>)));
             }
 
@@ -89,8 +89,8 @@ namespace ReflectionExt.Tests
             [Test]
             public void ApplyTypeSketchしたものに対してApplyTypesでClosedTypeに変換できる()
             {
-                var intT = Reflect.Type<int>().ApplyTypes();
-                var strT = Reflect.Type<string>().ApplyTypes();
+                var intT = ClosedType.OfInt;
+                var strT = ClosedType.OfString;
 
                 var res1 = sut.ApplyTypeSketches(Reflect.Type(typeof(Seq<>)), Reflect.Type(typeof(Seq<>)));
                 Assert.That(res1.ApplyTypes(intT, strT).Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest.Base3<global::LangExt.Seq<int>, global::LangExt.Seq<string>>"));
@@ -110,7 +110,7 @@ namespace ReflectionExt.Tests
             [Test]
             public void ApplyTypesでClosedTypeに変換できる()
             {
-                ClosedType res = sut.ApplyTypes(Reflect.Type<int>().ApplyTypes());
+                ClosedType res = sut.ApplyTypes(ClosedType.OfInt);
                 Assert.That(res.Name.CSharpFullName, Is.EqualTo("global::LangExt.Seq<global::LangExt.Seq<int>>"));
             }
         }
@@ -122,7 +122,7 @@ namespace ReflectionExt.Tests
             [Test, ExpectedException(typeof(ArgumentException))]
             public void ApplyTypesで例外が発生する()
             {
-                sut.ApplyTypes(Reflect.Type<int>().ApplyTypes());
+                sut.ApplyTypes(ClosedType.OfInt);
             }
 
             [Test, ExpectedException(typeof(InvalidOperationException))]
