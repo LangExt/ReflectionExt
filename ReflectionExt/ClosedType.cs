@@ -63,17 +63,14 @@ namespace ReflectionExt
 
         internal static ClosedType FromType(Type type, Seq<ClosedType> typeParameterTypes)
         {
-            return type.GetGenericArguments().ToSeq().Partition(t => t.IsGenericParameter).Match(
-                (genParams, appliedParams) =>
-                {
-                    if (genParams.IsEmpty() && typeParameterTypes.IsEmpty())
-                        return new ClosedType(type);
-                    if (genParams.Size() != typeParameterTypes.Size())
-                        throw new ArgumentException();
-                    var res = type.MakeGenericType(typeParameterTypes.Map(t => t.ToType()).ToArray());
-                    return new ClosedType(res);
-                }
-            );
+            if (type.ContainsGenericParameters == false && typeParameterTypes.IsNotEmpty())
+                throw new ArgumentException();
+
+            if (type.IsGenericType == false)
+                return new ClosedType(type);
+
+            var res = type.GetGenericTypeDefinition().MakeGenericType(TypeArgs(type, typeParameterTypes, FromType).ToArray());
+            return new ClosedType(res);
         }
 
         /// <summary>

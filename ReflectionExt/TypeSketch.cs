@@ -81,5 +81,24 @@ namespace ReflectionExt
         {
             return OpenType.FromType(this.Type);
         }
+
+        internal static TypeSketch FromType(Type type, Seq<TypeSketch> typeParameterTypes)
+        {
+            if (type.ContainsGenericParameters == false && typeParameterTypes.IsNotEmpty())
+                throw new ArgumentException();
+
+            if (type.IsGenericType == false)
+                return new TypeSketch(type);
+
+            var res = type.GetGenericTypeDefinition().MakeGenericType(TypeArgs(type, typeParameterTypes, FromType).ToArray());
+            return new TypeSketch(res);
+        }
+
+        public TypeSketch ApplyTypeSketches(params TypeSketch[] typeParameterTypeSketches)
+        {
+            if (this.Type.ContainsGenericParameters == false)
+                throw new InvalidOperationException();
+            return FromType(this.Type, typeParameterTypeSketches.ToSeq());
+        }
     }
 }

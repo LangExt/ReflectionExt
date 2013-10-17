@@ -69,5 +69,38 @@ namespace ReflectionExt
         {
             get { return this.Type.GetNestedTypes(BindingFlags.Public).Map(this.ToSelf).ToSeq(); }
         }
+
+        protected static Seq<Type> TypeArgs(Type type, Seq<TSelf> typeParameterTypes, Func<Type, Seq<TSelf>, TSelf> fromTypeFunc)
+        {
+            var offset = 0;
+            return type.GetGenericArguments().ToSeq().Map(t =>
+            {
+                if (t.IsGenericParameter)
+                {
+                    if (offset + 1 > typeParameterTypes.Size())
+                        throw new ArgumentException();
+                    return LangExt.Unsafe.SeqUnsafe.Get(typeParameterTypes, offset++).ToType();
+                }
+                if (t.IsGenericTypeDefinition)
+                {
+                    var count = CountOfTypeParameterTypes(t);
+                    if (offset + count > typeParameterTypes.Size())
+                        throw new ArgumentException();
+                    var res = fromTypeFunc(t, typeParameterTypes.Skip(offset).Take(count));
+                    offset += count;
+                    return res.ToType();
+                }
+                return t;
+            });
+        }
+
+        static int CountOfTypeParameterTypes(Type type)
+        {
+            if (type.ContainsGenericParameters == false)
+                return 0;
+            var nested = type.GetGenericArguments();
+            var count = nested.ToSeq().Count(t => t.IsGenericParameter);
+            return count + nested.ToSeq().SumBy(CountOfTypeParameterTypes);
+        }
     }
 }

@@ -10,51 +10,142 @@ namespace ReflectionExt.Tests
     {
         public class intを表すTypeSketch
         {
+            readonly TypeSketch sut = Reflect.Type<int>();
+
             [Test]
             public void ApplyTypesでClosedTypeに変換できる()
             {
-                ClosedType sut = Reflect.Type<int>().ApplyTypes();
-                Assert.That(sut.ToType(), Is.EqualTo(typeof(int)));
+                ClosedType res = sut.ApplyTypes();
+                Assert.That(res.ToType(), Is.EqualTo(typeof(int)));
+            }
+
+            [Test, ExpectedException(typeof(InvalidOperationException))]
+            public void ApplyTypeSketchesで例外が発生する()
+            {
+                sut.ApplyTypeSketches();
             }
         }
 
         public class intのSeqを表すTypeSketch
         {
+            readonly TypeSketch sut = Reflect.Type<Seq<int>>();
+
             [Test]
             public void ApplyTypesでClosedTypeに変換できる()
             {
-                ClosedType sut = Reflect.Type<Seq<int>>().ApplyTypes();
-                Assert.That(sut.ToType(), Is.EqualTo(typeof(Seq<int>)));
+                ClosedType res = sut.ApplyTypes();
+                Assert.That(res.ToType(), Is.EqualTo(typeof(Seq<int>)));
+            }
+
+            [Test, ExpectedException(typeof(InvalidOperationException))]
+            public void ApplyTypeSketchesで例外が発生する()
+            {
+                sut.ApplyTypeSketches();
             }
         }
 
         public class Seqを表すTypeSketch
         {
+            readonly TypeSketch sut = Reflect.Type(typeof(Seq<>));
+
             [Test]
             public void ApplyTypesでClosedTypeに変換できる()
             {
-                ClosedType sut = Reflect.Type(typeof(Seq<>)).ApplyTypes(Reflect.Type<int>().ApplyTypes());
-                Assert.That(sut.ToType(), Is.EqualTo(typeof(Seq<int>)));
+                ClosedType res = sut.ApplyTypes(Reflect.Type<int>().ApplyTypes());
+                Assert.That(res.ToType(), Is.EqualTo(typeof(Seq<int>)));
+            }
+
+            [TestCase(typeof(int), "global::LangExt.Seq<int>")]
+            [TestCase(typeof(Seq<int>), "global::LangExt.Seq<global::LangExt.Seq<int>>")]
+            [TestCase(typeof(Seq<>), "global::LangExt.Seq<global::LangExt.Seq<T>>")]
+            public void ApplyTypeSketchでTypeSketchが適用されたTypeSketchが得られる(Type type, string expected)
+            {
+                TypeSketch res = sut.ApplyTypeSketches(Reflect.Type(type));
+                Assert.That(res.Name.CSharpFullName, Is.EqualTo(expected));
+            }
+        }
+
+        public class 複数の型パラメータを持つTypeSketch
+        {
+            readonly TypeSketch sut = Reflect.Type(typeof(Base3<,>));
+
+            [Test]
+            public void ApplyTypesでClosedTypeに変換できる()
+            {
+                ClosedType res = sut.ApplyTypes(Reflect.Type<int>().ApplyTypes(), Reflect.Type<string>().ApplyTypes());
+                Assert.That(res.ToType(), Is.EqualTo(typeof(Base3<int, string>)));
+            }
+
+            [TestCase(typeof(int), typeof(int), "Base3<int, int>")]
+            [TestCase(typeof(Seq<>), typeof(int), "Base3<global::LangExt.Seq<T>, int>")]
+            [TestCase(typeof(int), typeof(Seq<>), "Base3<int, global::LangExt.Seq<T>>")]
+            [TestCase(typeof(Seq<>), typeof(Seq<>), "Base3<global::LangExt.Seq<T>, global::LangExt.Seq<T>>")]   // TODO : T1, T2が正しいのでは？
+            public void ApplyTypeSketchでTypeSketchが適用されたTypeSketchが得られる(Type type1, Type type2, string expected)
+            {
+                TypeSketch res = sut.ApplyTypeSketches(Reflect.Type(type1), Reflect.Type(type2));
+                Assert.That(res.Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest." + expected));
+            }
+
+            [Test]
+            public void ApplyTypeSketchしたものに対してApplyTypesでClosedTypeに変換できる()
+            {
+                var intT = Reflect.Type<int>().ApplyTypes();
+                var strT = Reflect.Type<string>().ApplyTypes();
+
+                var res1 = sut.ApplyTypeSketches(Reflect.Type(typeof(Seq<>)), Reflect.Type(typeof(Seq<>)));
+                Assert.That(res1.ApplyTypes(intT, strT).Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest.Base3<global::LangExt.Seq<int>, global::LangExt.Seq<string>>"));
+
+                var res2 = sut.ApplyTypeSketches(Reflect.Type<int>(), Reflect.Type(typeof(Seq<>)));
+                Assert.That(res2.ApplyTypes(intT).Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest.Base3<int, global::LangExt.Seq<int>>"));
+
+                var res3 = sut.ApplyTypeSketches(Reflect.Type(typeof(Seq<>)), Reflect.Type<int>());
+                Assert.That(res3.ApplyTypes(intT).Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest.Base3<global::LangExt.Seq<int>, int>"));
+            }
+        }
+
+        public class ネストしたSeqを表すTypeSketch
+        {
+            readonly TypeSketch sut = Reflect.Type(typeof(Seq<>)).ApplyTypeSketches(Reflect.Type(typeof(Seq<>)));
+
+            [Test]
+            public void ApplyTypesでClosedTypeに変換できる()
+            {
+                ClosedType res = sut.ApplyTypes(Reflect.Type<int>().ApplyTypes());
+                Assert.That(res.Name.CSharpFullName, Is.EqualTo("global::LangExt.Seq<global::LangExt.Seq<int>>"));
             }
         }
 
         public class 型パラメータが多すぎる場合
         {
-            [Test]
+            readonly TypeSketch sut = Reflect.Type<Seq<int>>();
+
+            [Test, ExpectedException(typeof(ArgumentException))]
             public void ApplyTypesで例外が発生する()
             {
-                var sut = Reflect.Type<Seq<int>>();
-                Assert.That(() => sut.ApplyTypes(Reflect.Type<int>().ApplyTypes()), Throws.Exception.TypeOf<ArgumentException>());
+                sut.ApplyTypes(Reflect.Type<int>().ApplyTypes());
+            }
+
+            [Test, ExpectedException(typeof(InvalidOperationException))]
+            public void ApplyTypeSketchesで例外が発生する()
+            {
+                sut.ApplyTypeSketches(Reflect.Type<int>());
             }
         }
 
         public class 型パラメータが少なすぎる場合
         {
-            [Test]
+            readonly TypeSketch sut = Reflect.Type(typeof(Seq<>));
+
+            [Test, ExpectedException(typeof(ArgumentException))]
             public void ApplyTypesで例外が発生する()
             {
-                var sut = Reflect.Type(typeof(Seq<>));
-                Assert.That(() => sut.ApplyTypes(), Throws.Exception.TypeOf<ArgumentException>());
+                sut.ApplyTypes();
+            }
+
+            [Test, ExpectedException(typeof(ArgumentException))]
+            public void ApplyTypeSketchesで例外が発生する()
+            {
+                sut.ApplyTypeSketches();
             }
         }
 
