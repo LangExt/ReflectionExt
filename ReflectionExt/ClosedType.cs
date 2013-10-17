@@ -19,6 +19,37 @@ namespace ReflectionExt
     /// </remarks>
     public class ClosedType : TypeLike<ClosedType>
     {
+        /// <summary>bool型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfBool = new ClosedType(typeof(bool));
+        /// <summary>byte型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfByte = new ClosedType(typeof(byte));
+        /// <summary>sbyte型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfSByte = new ClosedType(typeof(sbyte));
+        /// <summary>short型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfShort = new ClosedType(typeof(short));
+        /// <summary>ushort型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfUShort = new ClosedType(typeof(ushort));
+        /// <summary>char型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfChar = new ClosedType(typeof(char));
+        /// <summary>int型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfInt = new ClosedType(typeof(int));
+        /// <summary>uint型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfUInt = new ClosedType(typeof(uint));
+        /// <summary>long型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfLong = new ClosedType(typeof(long));
+        /// <summary>ulong型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfULong = new ClosedType(typeof(ulong));
+        /// <summary>float型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfFloat = new ClosedType(typeof(float));
+        /// <summary>double型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfDouble = new ClosedType(typeof(double));
+        /// <summary>decimal型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfDecimal = new ClosedType(typeof(decimal));
+        /// <summary>string型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfString = new ClosedType(typeof(string));
+        /// <summary>object型を表すClosedTypeです。</summary>
+        public static readonly ClosedType OfObject = new ClosedType(typeof(object));
+
         internal ClosedType(Type type)
             : base(type)
         {
