@@ -24,6 +24,12 @@ namespace ReflectionExt.Tests
             {
                 sut.ApplyTypeSketches();
             }
+
+            [Test, ExpectedException(typeof(InvalidOperationException))]
+            public void ApplyOpenTypesで例外が発生する()
+            {
+                sut.ApplyOpenTypes();
+            }
         }
 
         public class intのSeqを表すTypeSketch
@@ -42,6 +48,12 @@ namespace ReflectionExt.Tests
             {
                 sut.ApplyTypeSketches();
             }
+
+            [Test, ExpectedException(typeof(InvalidOperationException))]
+            public void ApplyOpenTypesで例外が発生する()
+            {
+                sut.ApplyOpenTypes();
+            }
         }
 
         public class Seqを表すTypeSketch
@@ -58,9 +70,18 @@ namespace ReflectionExt.Tests
             [TestCase(typeof(int), "global::LangExt.Seq<int>")]
             [TestCase(typeof(Seq<int>), "global::LangExt.Seq<global::LangExt.Seq<int>>")]
             [TestCase(typeof(Seq<>), "global::LangExt.Seq<global::LangExt.Seq<T>>")]
+            [TestCase(typeof(Base3<,>), "global::LangExt.Seq<global::ReflectionExt.Tests.TypeSketchTest.Base3<T, U>>")]
             public void ApplyTypeSketchでTypeSketchが適用されたTypeSketchが得られる(Type type, string expected)
             {
                 TypeSketch res = sut.ApplyTypeSketches(Reflect.Type(type));
+                Assert.That(res.Name.CSharpFullName, Is.EqualTo(expected));
+            }
+
+            [TestCase(typeof(Seq<>), "global::LangExt.Seq<global::LangExt.Seq<T>>")]
+            [TestCase(typeof(Base3<,>), "global::LangExt.Seq<global::ReflectionExt.Tests.TypeSketchTest.Base3<T, U>>")]
+            public void ApplyOpenTypesでOpenTypeが適用されたOpenTypeが得られる(Type type, string expected)
+            {
+                OpenType res = sut.ApplyOpenTypes(Reflect.Type(type).UnapplyTypes().GetOr(null));
                 Assert.That(res.Name.CSharpFullName, Is.EqualTo(expected));
             }
         }
@@ -86,6 +107,16 @@ namespace ReflectionExt.Tests
                 Assert.That(res.Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest." + expected));
             }
 
+            // typeof(int)をOpenTypeに出来ないので、以下のテストは落ちる
+            //[TestCase(typeof(Seq<>), typeof(int), "Base3<global::LangExt.Seq<T>, int>")]
+            //[TestCase(typeof(int), typeof(Seq<>), "Base3<int, global::LangExt.Seq<T>>")]
+            [TestCase(typeof(Seq<>), typeof(Seq<>), "Base3<global::LangExt.Seq<T>, global::LangExt.Seq<T>>")]   // TODO : T1, T2が正しいのでは？
+            public void ApplyOpenTypesでOpenTypeが適用されたOpenTypeが得られる(Type type1, Type type2, string expected)
+            {
+                OpenType res = sut.ApplyOpenTypes(Reflect.Type(type1).UnapplyTypes().GetOr(null), Reflect.Type(type2).UnapplyTypes().GetOr(null));
+                Assert.That(res.Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest." + expected));
+            }
+
             [Test]
             public void ApplyTypeSketchしたものに対してApplyTypesでClosedTypeに変換できる()
             {
@@ -101,11 +132,33 @@ namespace ReflectionExt.Tests
                 var res3 = sut.ApplyTypeSketches(Reflect.Type(typeof(Seq<>)), Reflect.Type<int>());
                 Assert.That(res3.ApplyTypes(intT).Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest.Base3<global::LangExt.Seq<int>, int>"));
             }
+
+            [Test]
+            public void ApplyOpenTypesしたものに対してApplyTypesでClosedTypeに変換できる()
+            {
+                var intT = ClosedType.OfInt;
+                var strT = ClosedType.OfString;
+
+                var res = sut.ApplyOpenTypes(Reflect.Type(typeof(Seq<>)).UnapplyTypes().GetOr(null), Reflect.Type(typeof(Seq<>)).UnapplyTypes().GetOr(null));
+                Assert.That(res.ApplyTypes(intT, strT).Name.CSharpFullName, Is.EqualTo("global::ReflectionExt.Tests.TypeSketchTest.Base3<global::LangExt.Seq<int>, global::LangExt.Seq<string>>"));
+            }
         }
 
         public class ネストしたSeqを表すTypeSketch
         {
             readonly TypeSketch sut = Reflect.Type(typeof(Seq<>)).ApplyTypeSketches(Reflect.Type(typeof(Seq<>)));
+
+            [Test]
+            public void ApplyTypesでClosedTypeに変換できる()
+            {
+                ClosedType res = sut.ApplyTypes(ClosedType.OfInt);
+                Assert.That(res.Name.CSharpFullName, Is.EqualTo("global::LangExt.Seq<global::LangExt.Seq<int>>"));
+            }
+        }
+
+        public class ネストしたSeqを表すOpenType
+        {
+            readonly OpenType sut = Reflect.Type(typeof(Seq<>)).ApplyOpenTypes(Reflect.Type(typeof(Seq<>)).UnapplyTypes().GetOr(null));
 
             [Test]
             public void ApplyTypesでClosedTypeに変換できる()
@@ -130,22 +183,34 @@ namespace ReflectionExt.Tests
             {
                 sut.ApplyTypeSketches(Reflect.Type<int>());
             }
+
+            [Test, ExpectedException(typeof(InvalidOperationException))]
+            public void ApplyOpenTypesで例外が発生する()
+            {
+                sut.ApplyOpenTypes(Reflect.Type(typeof(Seq<>)).UnapplyTypes().GetOr(null));
+            }
         }
 
         public class 型パラメータが少なすぎる場合
         {
-            readonly TypeSketch sut = Reflect.Type(typeof(Seq<>));
+            readonly TypeSketch sut = Reflect.Type(typeof(Base3<,>));
 
             [Test, ExpectedException(typeof(ArgumentException))]
             public void ApplyTypesで例外が発生する()
             {
-                sut.ApplyTypes();
+                sut.ApplyTypes(ClosedType.OfInt);
             }
 
             [Test, ExpectedException(typeof(ArgumentException))]
             public void ApplyTypeSketchesで例外が発生する()
             {
-                sut.ApplyTypeSketches();
+                sut.ApplyTypeSketches(Reflect.Type<int>());
+            }
+
+            [Test, ExpectedException(typeof(ArgumentException))]
+            public void ApplyOpenTypesで例外が発生する()
+            {
+                sut.ApplyOpenTypes(Reflect.Type(typeof(Seq<>)).UnapplyTypes().GetOr(null));
             }
         }
 

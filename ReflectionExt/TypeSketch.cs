@@ -43,7 +43,7 @@ namespace ReflectionExt
         /// </summary>
         public Option<OpenType> UnapplyTypes()
         {
-            return OpenType.FromType(this.Type);
+            return OpenType.FromType(this.Type, Seq.Empty<OpenType>());
         }
 
         internal static TypeSketch FromType(Type type, Seq<TypeSketch> typeParameterTypes)
@@ -63,6 +63,15 @@ namespace ReflectionExt
             if (this.Type.ContainsGenericParameters == false)
                 throw new InvalidOperationException();
             return FromType(this.Type, typeParameterTypeSketches.ToSeq());
+        }
+
+        public OpenType ApplyOpenTypes(params OpenType[] typeParameterOpenTypes)
+        {
+            if (this.Type.ContainsGenericParameters == false)
+                throw new InvalidOperationException();
+            if (typeParameterOpenTypes.Length == 0)
+                throw new ArgumentException();
+            return OpenType.FromType(this.Type, typeParameterOpenTypes.ToSeq()).GetOrElse(() => { throw new Exception(); });
         }
     }
 }

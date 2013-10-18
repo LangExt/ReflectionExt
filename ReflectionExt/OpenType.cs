@@ -26,11 +26,13 @@ namespace ReflectionExt
             return new OpenType(rawType);
         }
 
-        internal static Option<OpenType> FromType(Type type)
+        internal static Option<OpenType> FromType(Type type, Seq<OpenType> typeParameterTypes)
         {
             if (type.IsGenericType == false)
                 return Option.None;
             var res = type.GetGenericTypeDefinition();
+            if (typeParameterTypes.IsNotEmpty())
+                res = res.MakeGenericType(TypeArgs(type, typeParameterTypes, (t, ps) => FromType(t, ps).GetOr(null)).ToArray());
             return Option.Some(new OpenType(res));
         }
 

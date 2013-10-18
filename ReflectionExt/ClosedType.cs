@@ -78,7 +78,7 @@ namespace ReflectionExt
         /// </summary>
         public Option<OpenType> UnapplyTypes()
         {
-            return OpenType.FromType(this.Type);
+            return OpenType.FromType(this.Type, Seq.Empty<OpenType>());
         }
     }
 }
